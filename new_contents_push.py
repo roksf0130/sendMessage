@@ -1,4 +1,4 @@
-import telegram, requests
+import telegram, requests, time
 from bs4 import BeautifulSoup
 import os
 
@@ -9,6 +9,7 @@ bot = telegram.Bot(token = my_token)
 #chat_id = '1347563170' 
 chat_id = '-408388337'
 url_prefix = 'https://www.ppomppu.co.kr/zboard/'
+now = time.localtime()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -43,7 +44,10 @@ send_message_list = list(final_set)
 
 if len(send_message_list) != 0 :
     for send_message in send_message_list :
-        bot.sendMessage(chat_id=chat_id, text=send_message.strip())
+        if (now.tm_hour == 21 or now.tm_hour == 22 or now.tm_hour == 23) :
+            bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
+        else :
+            bot.sendMessage(chat_id=chat_id, text=send_message.strip())
 
 with open(os.path.join(BASE_DIR, 'latest.txt'), 'w+') as f_write :
     for i in latest_contents :
