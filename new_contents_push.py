@@ -2,16 +2,20 @@ import telegram, requests, time
 from bs4 import BeautifulSoup
 import os
 
-# 텔레그램 봇(pororopororo_bot)의 토큰 및 ID 셋팅
-my_token = '1416123949:AAEw0e3g9jiyvSVe6Thf1W5zOmP-o266yO0'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# 텔레그램 봇(pororopororo_bot)의 토큰 및 ID 셋팅 - 파일에서 읽어옴
+with open(os.path.join(BASE_DIR, 'resources/bot_token'), 'r') as f1 :
+    my_token = f1.readline().strip()
+    f1.close()
+
+with open(os.path.join(BASE_DIR, 'resources/bot_chatid'), 'r') as f2 :
+    chat_id = f2.readline().strip()
+    f2.close()
+
 bot = telegram.Bot(token = my_token)
-#chat_id = bot.getUpdates()[-1].message.chat.id
-#chat_id = '1347563170' 
-chat_id = '-408388337'
 url_prefix = 'https://www.ppomppu.co.kr/zboard/'
 now = time.localtime()
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 req = requests.get('http://www.ppomppu.co.kr/zboard/zboard.php?id=ppomppu')
 
@@ -27,8 +31,8 @@ send_message = ''    # 텔레그램으로 전송할 메세지
 write_message = ''   # 파일에 저장할 메세지
 
 for i in range(1, 11) :
-    #latest_contents.append(posts[i].find('font').text + ' : ' + url_prefix + posts[i].find_all('a')[1]["href"])
-    latest_contents.append(url_prefix + posts[i].find_all('a')[1]["href"])
+    latest_contents.append(posts[i].find('font').text + ' : ' + url_prefix + posts[i].find_all('a')[1]["href"])
+    #latest_contents.append(url_prefix + posts[i].find_all('a')[1]["href"])
 
 with open(os.path.join(BASE_DIR, 'latest.txt'), 'r') as f_read :
     for read_line in f_read :
