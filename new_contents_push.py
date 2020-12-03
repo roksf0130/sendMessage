@@ -44,7 +44,7 @@ send_message_list = list(final_set)
 
 if len(send_message_list) != 0 :
     for send_message in send_message_list :
-        if (now.tm_hour == 21 or now.tm_hour == 22 or now.tm_hour == 23) :
+        if (now.tm_hour >= 21 and now.tm_hour <= 23) :
             bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
         else :
             bot.sendMessage(chat_id=chat_id, text=send_message.strip())
