@@ -1,15 +1,15 @@
 import telegram, requests, os, time
 from bs4 import BeautifulSoup
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 URL_PREFIX = 'https://www.ppomppu.co.kr/zboard/'
 CURR_TIME = time.localtime()
 
 latest_contents = {}
-before_contents = {}
+send_contents = {}
 
 # 텔레그램 봇의 TOKEN, CHAT_ID 정보 획득 Function
 def getBaseInfo(val) :
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # 전달받은 값이 1이면 TOKNE, 2이면 CHATID 리턴
     if val == '1' :
@@ -19,7 +19,7 @@ def getBaseInfo(val) :
     
     with open(os.path.join(BASE_DIR, temp), 'r') as f :
         ret_val = f.readline().strip()
-    f.close()
+        f.close()
 
     return ret_val
 
@@ -44,11 +44,30 @@ for i in range(0, 10) :
     # 딕셔너리 값 : 게시글 제목 + ' : ' + 하이퍼링크
     latest_contents[link_str[link_str.rfind('=')+1:]] = posts[i].find('font').text + ' : ' + URL_PREFIX + link_str
 
+# 메세지 전송을 위한 딕셔너리를 새로 생성
+send_contents = latest_contents.copy()
 
+# 직전 작업에서 크롤링한 게시글ID를 파일에서 read 함
+# 파일에는 게시글ID가 저장되어 있으며 해당 ID 가 크롤링한 데이터에 있으면 삭제함
+with open(os.path.join(BASE_DIR, 'resources/saved_contents'), 'r') as f_read :
+    for content_id in f_read :
+        if send_contents.get(content_id.strip()) != None :
+            del send_contents[content_id.strip()]
+    f_read.close()
 
+# 전송할 메시지가 있으면 (최근 게시글에서 전송하지 않은 메세지가 있는 경우) 아래 로직 수행
+if len(send_contents) != 0 :
+    for send_message in send_contents.values() :
+        # 21시에서 09시 사이에는 알림 없이 전송
+        if CURR_TIME.tm_hour >= 21 and CURR_TIME.tm_hour <= 9 :
+            #bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
+            print(send_message)
+        else :
+            #bot.sendMessage(chat_id=chat_id, text=send_message.strip())
+            print(send_message)
 
-#for i in range(1, 11) :
-#    latest_contents.append(posts[i].find('font').text + ' : ' + url_prefix + posts[i].find_all('a')[1]["href"])
-    #latest_contents.append(url_prefix + posts[i].find_all('a')[1]["href"])
-
-
+# 가장 최근 게시글의 ID 를 파일에 write
+with open(os.path.join(BASE_DIR, 'resources/saved_contents'), 'w+') as f_write :
+    for write_message in latest_contents.keys() :
+        f_write.write(write_message.strip() + '\n')
+    f_write.close()
