@@ -60,11 +60,11 @@ if len(send_contents) != 0 :
     for send_message in send_contents.values() :
         # 21시에서 09시 사이에는 알림 없이 전송
         if CURR_TIME.tm_hour >= 21 and CURR_TIME.tm_hour <= 9 :
-            #bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
-            print(send_message)
+            bot.sendMessage(chat_id=my_chatid, text=send_message.strip(), disable_notification=True)
+            #print(send_message)
         else :
-            #bot.sendMessage(chat_id=chat_id, text=send_message.strip())
-            print(send_message)
+            bot.sendMessage(chat_id=my_chatid, text=send_message.strip())
+            #print(send_message)
 
 # 가장 최근 게시글의 ID 를 파일에 write
 with open(os.path.join(BASE_DIR, 'resources/saved_contents'), 'w+') as f_write :
