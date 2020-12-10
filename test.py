@@ -59,7 +59,7 @@ with open(os.path.join(BASE_DIR, 'resources/saved_contents'), 'r') as f_read :
 if len(send_contents) != 0 :
     for send_message in send_contents.values() :
         # 21시에서 09시 사이에는 알림 없이 전송
-        if CURR_TIME.tm_hour >= 21 and CURR_TIME.tm_hour <= 9 :
+        if CURR_TIME.tm_hour >= 21 or CURR_TIME.tm_hour <= 9 :
             #bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
             print(send_message)
         else :
