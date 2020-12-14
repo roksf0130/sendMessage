@@ -37,7 +37,7 @@ html = req.text
 soup = BeautifulSoup(html, 'html.parser')
 posts = soup.find_all('tr',{'class':['list0','list1']})
 
-for i in range(0, 10) :
+for i in range(0, 15) :
     # 게시글ID 와 게시글 제목으로 딕셔너리 생성
     link_str = posts[i].find_all('a')[1]["href"]   # 게시글 하이퍼링크 추출
     # 딕셔너리 키 : 하이퍼링크에서 추출한 게시글ID
@@ -45,7 +45,12 @@ for i in range(0, 10) :
     latest_contents[link_str[link_str.rfind('=')+1:]] = posts[i].find('font').text + ' : ' + URL_PREFIX + link_str
 
 # 메세지 전송을 위한 딕셔너리를 새로 생성
-send_contents = latest_contents.copy()
+# 게시글ID 순서대로 정렬. 가져온 15개 중 최근 10개의 글만 사용한다.
+#send_contents = latest_contents.copy()
+temp_list = sorted(latest_contents.items(), reverse=True)
+
+for i in range(0, 10) :
+    send_contents[temp_list[i][0]] = temp_list[i][1]
 
 # 직전 작업에서 크롤링한 게시글ID를 파일에서 read 함
 # 파일에는 게시글ID가 저장되어 있으며 해당 ID 가 크롤링한 데이터에 있으면 삭제함
@@ -60,10 +65,10 @@ if len(send_contents) != 0 :
     for send_message in send_contents.values() :
         # 21시에서 09시 사이에는 알림 없이 전송
         if CURR_TIME.tm_hour >= 21 or CURR_TIME.tm_hour <= 9 :
-            #bot.sendMessage(chat_id=chat_id, text=send_message.strip(), disable_notification=True)
+            #bot.sendMessage(chat_id=my_chatid, text=send_message.strip(), disable_notification=True)
             print(send_message)
         else :
-            #bot.sendMessage(chat_id=chat_id, text=send_message.strip())
+            #bot.sendMessage(chat_id=my_chatid, text=send_message.strip())
             print(send_message)
 
 # 가장 최근 게시글의 ID 를 파일에 write
